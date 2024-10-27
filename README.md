@@ -1,69 +1,38 @@
-| Supported Targets | ESP32 | ESP32-C2 | ESP32-C3 | ESP32-C6 | ESP32-H2 | ESP32-P4 | ESP32-S2 | ESP32-S3 |
-| ----------------- | ----- | -------- | -------- | -------- | -------- | -------- | -------- | -------- |
+# Example นี้มีชื่อว่า https_server
+โดยการทำงานของ Example นี้คือการทำให้ esp32 เป็น server โดย ตอบสนองต่อคำขอ GET ด้วย Hello Secure World!
+#
+ขั้นตอนแรกเลือก Example
+# ![image](https://github.com/user-attachments/assets/e3a39320-1635-4901-a060-25124b00d1be)
+แล้วกดmenuconfig
+# ![image](https://github.com/user-attachments/assets/7ce64369-0a02-4c20-ac59-df53eb34692a)
+เลือก Example Connection Configuration เพื่อแก้ไขชื่อและรหัส wifi และ save
+# ![image](https://github.com/user-attachments/assets/ba97b110-4dd5-41b2-aa0d-8705970b357e)
+รันและbuildโปรแกรม
+# ![image](https://github.com/user-attachments/assets/8e1fcf35-395f-4ae2-9ac7-347829f1ce74)
+ให้สังเกตุ ip แล้วนำไปเข้าในเบราว์เซอร์ เช่น https://192.168.1.34
+# ![image](https://github.com/user-attachments/assets/a7432fca-72ca-426d-9b21-9bbc9ce2f723)
+# ![image](https://github.com/user-attachments/assets/0f014a62-f22a-4c97-b48c-b339a59ba18f)
 
-# HTTP server with SSL support using OpenSSL
-
-This example creates a SSL server that returns a simple HTML page when you visit its root URL.
-
-See the `esp_https_server` component documentation for details.
-
-## How to use example
-Before project configuration and build, be sure to set the correct chip target using `idf.py set-target <chip_name>`.
-
-### Configure the project
-
+# แก้ไขเพิ่มเติม
+จะสังเกตุได้ว่าในหน้าเบราว์เซอร์ใน code กำหนดให้ Hello Secure World! แต่หน้าเบราว์เซอร์แสดง Header fields are too long
+แก้โดยกด menuconfig และค้นหา http
+# ![image](https://github.com/user-attachments/assets/2fbfea38-3d2a-4401-bba5-fa871fcc4cd4)
+ปรับที่ Max HTTP Request Header Length และ Max HTTP URI Length ให้เป็น 1024 แล้วกด save
+# ![image](https://github.com/user-attachments/assets/4611d402-b19b-4c1b-9de8-59eec380bee1)
+รันและbuildโปรแกรม
+# ![image](https://github.com/user-attachments/assets/4a752ce3-9de3-4759-9b64-cdbcb1fb2d64)
+เข้าในเบราว์เซอร์ https://192.168.1.34
+# ![image](https://github.com/user-attachments/assets/51a86a8b-63f7-4b01-accc-662f4a1f3cc8)
+# ![image](https://github.com/user-attachments/assets/3bb3d068-a2de-4578-bb49-f6a2e324a43b)
+สามารถแก้ไขข้อความที่หน้าเว็บได้ที่main.c
 ```
-idf.py menuconfig
+static esp_err_t root_get_handler(httpd_req_t *req)
+{
+    httpd_resp_set_type(req, "text/html");
+    httpd_resp_send(req, "<h1>Hello Visawa!</h1>", HTTPD_RESP_USE_STRLEN);
+
+    return ESP_OK;
+}
 ```
-Open the project configuration menu (`idf.py menuconfig`) to configure Wi-Fi or Ethernet. See "Establishing Wi-Fi or Ethernet Connection" section in [examples/protocols/README.md](../../README.md) for more details.
+# ![image](https://github.com/user-attachments/assets/aeeb1e60-36a6-4e4a-95a3-95dda93a6f34)
 
-### Build and Flash
-
-Build the project and flash it to the board, then run monitor tool to view serial output:
-
-```
-idf.py -p PORT flash monitor
-```
-
-(Replace PORT with the name of the serial port to use.)
-
-(To exit the serial monitor, type ``Ctrl-]``.)
-
-See the Getting Started Guide for full steps to configure and use ESP-IDF to build projects.
-
-## Certificates
-
-You will need to approve a security exception in your browser. This is because of a self signed
-certificate; this will be always the case, unless you preload the CA root into your browser/system
-as trusted.
-
-You can generate a new certificate using the OpenSSL command line tool:
-
-```
-openssl req -newkey rsa:2048 -nodes -keyout prvtkey.pem -x509 -days 3650 -out cacert.pem -subj "/CN=ESP32 HTTPS server example"
-```
-
-Expiry time and metadata fields can be adjusted in the invocation.
-
-Please see the openssl man pages (man openssl-req) for more details.
-
-It is **strongly recommended** to not reuse the example certificate in your application;
-it is included only for demonstration.
-
-## Example Output
-
-```
-I (8596) example: Starting server
-I (8596) esp_https_server: Starting server
-I (8596) esp_https_server: Server listening on port 443
-I (8596) example: Registering URI handlers
-I (8606) esp_netif_handlers: example_connect: sta ip: 192.168.194.219, mask: 255.255.255.0, gw: 192.168.194.27
-I (8616) example_connect: Got IPv4 event: Interface "example_connect: sta" address: 192.168.194.219
-I (9596) example_connect: Got IPv6 event: Interface "example_connect: sta" address: fe80:0000:0000:0000:266f:28ff:fe80:2c74, type: ESP_IP6_ADDR_IS_LINK_LOCAL
-I (9596) example_connect: Connected to example_connect: sta
-W (9606) wifi:<ba-add>idx:0 (ifx:0, ee:6d:19:60:f6:0e), tid:0, ssn:2, winSize:64
-I (9616) example_connect: - IPv4 address: 192.168.194.219
-I (9616) example_connect: - IPv6 address: fe80:0000:0000:0000:266f:28ff:fe80:2c74, type: ESP_IP6_ADDR_IS_LINK_LOCAL
-W (14426) wifi:<ba-add>idx:1 (ifx:0, ee:6d:19:60:f6:0e), tid:4, ssn:0, winSize:64
-I (84896) esp_https_server: performing session handshake
-```
