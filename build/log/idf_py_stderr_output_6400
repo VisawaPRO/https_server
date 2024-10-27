@@ -1,0 +1,8 @@
+fatal: detected dubious ownership in repository at 'C:/Users/WIndows 11/esp/v5.3.1/esp-idf/components/openthread/openthread'
+'C:/Users/WIndows 11/esp/v5.3.1/esp-idf/components/openthread/openthread/.git' is owned by:
+	'S-1-5-32-544'
+but the current user is:
+	'S-1-5-21-367791159-1399870793-829418695-1001'
+To add an exception for this directory, call:
+
+	git config --global --add safe.directory 'C:/Users/WIndows 11/esp/v5.3.1/esp-idf/components/openthread/openthread'
